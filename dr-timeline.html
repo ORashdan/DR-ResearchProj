@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetic Retinopathy Project Timeline</title>
+    <style>
+        margin: 0; padding: 0; box-sizing: border-box;
+        body { font-family: Segoe UI, system-ui, -apple-system, sans-serif; background: #0f1117; color: #e2e8f0; padding: 40px 24px; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { margin-bottom: 48px; }
+        .header h1 { font-size: 28px; font-weight: 700; color: #f7fafc; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .header .subtitle { font-size: 15px; color: #718096; margin-bottom: 20px; }
+        .header-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+        .meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #4a5568; }
+        .meta-value { font-size: 15px; color: #cbd5e0; font-weight: 500; }
+        .overall-progress { margin-top: 20px; background: #1a1d2e; border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+        .progress-label { font-size: 13px; color: #718096; white-space: nowrap; }
+        .progress-track { flex: 1; height: 8px; background: #2d3148; border-radius: 99px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width 0.6s ease; }
+        .progress-pct { font-size: 14px; font-weight: 600; color: #a78bfa; min-width: 36px; text-align: right; }
+        .legend { display: flex; gap: 24px; margin: 28px 0 36px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #718096; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+        .dot-not-started { background: #2d3148; border: 1px solid #4a5568; }
+        .dot-upcoming { background: #4a5568; }
+        .dot-milestone { background: #f59e0b; }
+        .gantt { position: relative; }
+        .month-axis { display: grid; grid-template-columns: 280px 1fr; margin-bottom: 8px; }
+        .month-labels { display: flex; position: relative; }
+        .month-label { font-size: 11px; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; position: absolute; transform: translateX(-50%); }
+        .phase { margin-bottom: 32px; }
+        .phase-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #6366f1; margin-bottom: 12px; padding-left: 4px; }
+        .task-row { display: grid; grid-template-columns: 280px 1fr; align-items: center; min-height: 44px; border-bottom: 1px solid #1a1d2e; transition: background 0.15s; }
+        .task-row:hover { background: rgba(99, 102, 241, 0.04); }
+        .task-info { display: flex; align-items: center; gap: 10px; padding: 8px 4px; }
+        .task-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .status-not-started { background: #2d3148; border: 1.5px solid #4a5568; }
+        .status-upcoming { background: #4a5568; }
+        .task-name { font-size: 13.5px; color: #cbd5e0; line-height: 1.35; }
+        .task-dates { font-size: 11px; color: #4a5568; margin-top: 1px; }
+        .gantt-area { position: relative; height: 100%; display: flex; align-items: center; }
+        .gantt-gridlines { position: absolute; inset: 0; display: flex; pointer-events: none; }
+        .gridline { flex: 1; border-right: 1px solid #1a1d2e; }
+        .gantt-bar { position: absolute; height: 20px; border-radius: 4px; min-width: 6px; }
+        .bar-not-started { background: #2d3148; border: 1px dashed #4a5568; }
+        .bar-upcoming { background: #2d3148; border: 1px solid #4a5568; }
+        .milestone-marker { position: absolute; width: 14px; height: 14px; background: #f59e0b; transform: rotate(45deg); border-radius: 2px; box-shadow: 0 0 8px rgba(245, 158, 11, 0.35); z-index: 2; }
+        .milestone-row .task-name { color: #f59e0b; font-weight: 600; }
+        .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: #ef4444; z-index: 3; pointer-events: none; }
+        .today-label { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #ef4444; font-weight: 600; white-space: nowrap; letter-spacing: 0.5px; }
+        @media (max-width: 768px) {
+            .task-row { grid-template-columns: 200px 1fr; }
+            .month-axis { grid-template-columns: 200px 1fr; }
+            .header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Diabetic Retinopathy Project Timeline</h1>
+            <div class="subtitle">Omar's MD Scholarly Project: AI in Ophthalmology / Oculomics 2025</div>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Duration</span>
+                    <span class="meta-value">Feb - Jun 2025</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Supervisors</span>
+                    <span class="meta-value">Dr Wenyi Hu & A/Prof Zhuoting Zhu</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Pathway</span>
+                    <span class="meta-value">Diabetic Retinopathy (DR)</span>
+                </div>
+            </div>
+        </div>
+        <div class="overall-progress">
+            <span class="progress-label">Overall Progress</span>
+            <div class="progress-track">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+            <span class="progress-pct">0%</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot dot-not-started"></div>Not Started</div>
+            <div class="legend-item"><div class="legend-dot dot-upcoming"></div>Upcoming</div>
+            <div class="legend-item"><div class="legend-dot dot-milestone"></div>Milestone</div>
+            <div class="legend-item" style="gap: 6px;"><div style="width: 16px; height: 2px; background: #ef4444; border-radius: 1px;"></div>Today</div>
+        </div>
+        <div class="gantt" id="gantt"></div>
+    </div>
+    <script>
+        const PROJECT_START = new Date(2025, 1, 1);
+        const PROJECT_END = new Date(2025, 5, 30);
+        const TODAY = new Date();
+        const MONTHS = [];
+        for (let d = new Date(PROJECT_START); d <= PROJECT_END; d.setMonth(d.getMonth() + 1)) {
+            MONTHS.push(new Date(d));
+        }
+
+        const phases = [
+            {
+                title: "Setup & Proposal (February)",
+                tasks: [
+                    { name: "Confirm DR allocation & share Gantt chart with Wenyi", start: "2025-02-01", end: "2025-02-14", status: "not-started" },
+                    { name: "Gather Australian DR guidelines (Diabetes Aus, RACGP, RANZCO, NHMRC)", start: "2025-02-03", end: "2025-02-28", status: "not-started" },
+                    { name: "Draft DR proposal (coordinate group proposal)", start: "2025-02-10", end: "2025-02-28", status: "not-started" }
+                ],
+                milestones: [
+                    { name: "Gantt chart due", date: "2025-02-14" },
+                    { name: "Group proposal draft complete", date: "2025-02-28" }
+                ]
+            },
+            {
+                title: "Search Strategy & UQ Milestone (March - April)",
+                tasks: [
+                    { name: "Develop & refine DR search terms for systematic review", start: "2025-03-01", end: "2025-04-09", status: "upcoming" },
+                    { name: "Prepare UQ milestone submission (proposal summary)", start: "2025-03-24", end: "2025-04-09", status: "upcoming" }
+                ],
+                milestones: [
+                    { name: "UQ Milestone: Project proposal due", date: "2025-04-09" }
+                ]
+            },
+            {
+                title: "Literature Review Phase & Phase 2 Thinking (April - June)",
+                tasks: [
+                    { name: "Conduct DR literature review (Phase 1: clinical workflow mapping)", start: "2025-04-10", end: "2025-06-15", status: "upcoming" },
+                    { name: "Begin Phase 2 thinking (AI/oculomics in DR pathway)", start: "2025-05-01", end: "2025-06-30", status: "upcoming" },
+                    { name: "Complete preliminary database search & finalise detailed proposal", start: "2025-05-15", end: "2025-06-30", status: "upcoming" }
+                ],
+                milestones: [
+                    { name: "Detailed proposal finalised", date: "2025-06-30" }
+                ]
+            }
+        ];
+
+        const totalDays = (PROJECT_END - PROJECT_START) / (1000 * 60 * 60 * 24);
+
+        function dateToPct(dateStr) {
+            const d = new Date(dateStr + "T00:00:00");
+            const days = (d - PROJECT_START) / (1000 * 60 * 60 * 24);
+            return Math.max(0, Math.min(100, (days / totalDays) * 100));
+        }
+
+        function fmtDate(dateStr) {
+            const d = new Date(dateStr + "T00:00:00");
+            return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+        }
+
+        const gantt = document.getElementById('gantt');
+        gantt.innerHTML = `<div class="month-axis"><div></div><div class="month-labels" style="position:relative; height:20px;">${MONTHS.map(m => {
+            const pct = (m - PROJECT_START) / (PROJECT_END - PROJECT_START) * 100;
+            return `<span class="month-label" style="left:${pct}%">${m.toLocaleDateString('en-AU', { month: 'short' })}</span>`;
+        }).join('')}</div></div>`;
+
+        phases.forEach(phase => {
+            const section = document.createElement('div');
+            section.className = 'phase';
+            let html = `<div class="phase-title">${phase.title}</div>`;
+            
+            phase.tasks.forEach(task => {
+                const left = dateToPct(task.start);
+                const right = dateToPct(task.end);
+                const width = right - left;
+                const statusClass = task.status === 'upcoming' ? 'status-upcoming' : 'status-not-started';
+                const barClass = task.status === 'upcoming' ? 'bar-upcoming' : 'bar-not-started';
+                
+                html += `
+                    <div class="task-row">
+                        <div class="task-info">
+                            <div class="task-status-dot ${statusClass}"></div>
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-dates">${fmtDate(task.start)} – ${fmtDate(task.end)}</div>
+                        </div>
+                        <div class="gantt-area">
+                            <div class="gantt-gridlines">${MONTHS.map(() => `<div class="gridline"></div>`).join('')}</div>
+                            <div class="gantt-bar ${barClass}" style="left:${left}%; width:${width}%"></div>
+                        </div>
+                    </div>`;
+            });
+
+            phase.milestones.forEach(ms => {
+                const pos = dateToPct(ms.date);
+                html += `
+                    <div class="task-row milestone-row">
+                        <div class="task-info">
+                            <div class="task-status-dot" style="background:#f59e0b; border:none;"></div>
+                            <div class="task-name">${ms.name}</div>
+                            <div class="task-dates">${fmtDate(ms.date)}</div>
+                        </div>
+                        <div class="gantt-area">
+                            <div class="gantt-gridlines">${MONTHS.map(() => `<div class="gridline"></div>`).join('')}</div>
+                            <div class="milestone-marker" style="left:calc(${pos}% - 7px)"></div>
+                        </div>
+                    </div>`;
+            });
+            
+            section.innerHTML = html;
+            gantt.appendChild(section);
+        });
+
+        if (TODAY >= PROJECT_START && TODAY <= PROJECT_END) {
+            const todayPct = (TODAY - PROJECT_START) / (PROJECT_END - PROJECT_START) * 100;
+            document.querySelectorAll('.gantt-area').forEach(area => {
+                const line = document.createElement('div');
+                line.className = 'today-line';
+                line.style.left = todayPct + '%';
+                area.appendChild(line);
+            });
+            const firstArea = document.querySelector('.gantt-area');
+            if (firstArea) {
+                const label = document.createElement('div');
+                label.className = 'today-line';
+                label.style.left = todayPct + '%';
+                label.innerHTML = `<span class="today-label">TODAY</span>`;
+                label.style.top = '-24px';
+                label.style.height = '24px';
+                firstArea.appendChild(label);
+            }
+        }
+    </script>
+</body>
+</html>
